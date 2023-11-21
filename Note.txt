@@ -1,0 +1,9 @@
+WinMain
+WindowClass
+WindowHandle
+Register
+CreateWindow
+Windowproc
+Exit -- PostQuitMessage(0)
+
+Just One Instance  -- CreateMutexA
