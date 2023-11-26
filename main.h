@@ -13,7 +13,7 @@ typedef struct GAMEBITMAP
 
 
 typedef struct PIXEL32
-{
+{	
 	uint8_t Blue;
 	uint8_t Green;
 	uint8_t Red;

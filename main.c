@@ -17,7 +17,7 @@ uint32_t gMonitorHeight;
 
 //Main Windows
 
-int  WinMain(_In_ HINSTANCE Instance, _In_ HINSTANCE hInstPrev, _In_ PSTR CommandLine, _In_ int cmdshow)
+int  WinMain(HINSTANCE Instance, HINSTANCE hInstPrev,PSTR CommandLine,int cmdshow)
 {
 
     UNREFERENCED_PARAMETER(hInstPrev);
@@ -51,7 +51,7 @@ int  WinMain(_In_ HINSTANCE Instance, _In_ HINSTANCE hInstPrev, _In_ PSTR Comman
         MessageBoxA(NULL, "Failed to Allocated Memory for Drawing Surface", "Error!", MB_ICONEXCLAMATION | MB_OK);
         goto Exit;
     }
-
+    memset(gBackBuffer.Memory,0x7F,GAME_DRAWING_AREA_MEMORY_SIZE);
     MSG Messsage = { 0 };
     gGameIsRunning = TRUE;
     
@@ -143,17 +143,17 @@ DWORD CreateMainGameWindow(Void)
     gMonitorWidth = gMonitorInfo.rcMonitor.right - gMonitorInfo.rcMonitor.left;
     gMonitorHeight = gMonitorInfo.rcMonitor.bottom - gMonitorInfo.rcMonitor.top;
 
-    if (SetWindowLongA(gGameWindow, GWL_STYLE, (WS_OVERLAPPEDWINDOW | WS_VISIBLE) & ~WS_OVERLAPPEDWINDOW) == 0)
+    if (SetWindowLongPtrA(gGameWindow, GWL_STYLE, (WS_OVERLAPPEDWINDOW | WS_VISIBLE) & ~WS_OVERLAPPEDWINDOW)==0)
+    {
+        Result = GetLastError();
+        goto Exit;
+    }
+    if (SetWindowPos(gGameWindow, HWND_TOP, gMonitorInfo.rcMonitor.left, gMonitorInfo.rcMonitor.top, gMonitorWidth, gMonitorHeight, SWP_FRAMECHANGED)==0)
     {
         Result = GetLastError();
         goto Exit;
     }
 
-    if (SetWindowPos(gGameWindow, HWND_TOPMOST, gMonitorInfo.rcMonitor.left, gMonitorInfo.rcMonitor.right, gMonitorWidth, gMonitorHeight,SWP_NOOWNERZORDER |SWP_FRAMECHANGED) == 0)
-    {
-        Result = GetLastError();
-        goto Exit;
-    }
 Exit:
     return(Result);
 }
@@ -193,6 +193,17 @@ VOID ProcessPlayerInput(VOID)
 //RenderFrameGraphics
 VOID RenderFrameGraphics(VOID)
 {
+    PIXEL32 Pixel = { 0 };
+    Pixel.Blue = 0xff;
+    Pixel.Red = 0;
+    Pixel.Green = 0;
+    Pixel.Alpha = 0xff;
+
+    for (int x = 0;x < GAME_RES_WIDTH * GAME_RES_HEIGHT;x++)
+    {
+        memcpy((PIXEL32*)gBackBuffer.Memory + x, &Pixel, sizeof(PIXEL32));
+    }
+
     HDC DeviceContext = GetDC(gGameWindow);
 
     StretchDIBits(DeviceContext,
@@ -208,6 +219,5 @@ VOID RenderFrameGraphics(VOID)
         &gBackBuffer.BitmapInfo,
         DIB_RGB_COLORS,
         SRCCOPY);
-
     ReleaseDC(gGameWindow, DeviceContext);
 }
