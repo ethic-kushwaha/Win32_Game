@@ -2,9 +2,8 @@
 #pragma warning(push, 3)
 #include <windows.h>
 #pragma warning(pop)
+
 #include <stdint.h>
-
-
 #include "main.h"
 
 BOOL gGameIsRunning;
@@ -17,7 +16,7 @@ uint32_t gMonitorHeight;
 
 //Main Windows
 
-int  WinMain(HINSTANCE Instance, HINSTANCE hInstPrev,PSTR CommandLine,int cmdshow)
+int __stdcall WinMain(HINSTANCE Instance, HINSTANCE hInstPrev,PSTR CommandLine,int cmdshow)
 {
 
     UNREFERENCED_PARAMETER(hInstPrev);
@@ -127,7 +126,7 @@ DWORD CreateMainGameWindow(Void)
         goto Exit;
     }
 
-    gGameWindow = CreateWindowExA(WS_EX_CLIENTEDGE, WindowClass.lpszClassName, "Window Title", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 640, 440, NULL, NULL, GetModuleHandleA(NULL), NULL);
+    gGameWindow = CreateWindowExA(0, WindowClass.lpszClassName, "Window Title", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 640, 440, NULL, NULL, GetModuleHandleA(NULL), NULL);
     if (gGameWindow == NULL)
     {
         Result = GetLastError();
@@ -194,14 +193,14 @@ VOID ProcessPlayerInput(VOID)
 VOID RenderFrameGraphics(VOID)
 {
     PIXEL32 Pixel = { 0 };
-    Pixel.Blue = 0xff;
+    Pixel.Blue = 0x7f;
     Pixel.Red = 0;
     Pixel.Green = 0;
     Pixel.Alpha = 0xff;
 
     for (int x = 0;x < GAME_RES_WIDTH * GAME_RES_HEIGHT;x++)
     {
-        memcpy((PIXEL32*)gBackBuffer.Memory + x, &Pixel, sizeof(PIXEL32));
+        memcpy_s((PIXEL32*)gBackBuffer.Memory + x,sizeof(PIXEL32), & Pixel, sizeof(PIXEL32));
     }
 
     HDC DeviceContext = GetDC(gGameWindow);

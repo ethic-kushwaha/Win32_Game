@@ -4,6 +4,8 @@
 #define GAME_RES_HEIGHT 240
 #define GAME_BPP 32
 #define GAME_DRAWING_AREA_MEMORY_SIZE (GAME_RES_WIDTH * GAME_RES_HEIGHT	* (GAME_BPP / 8))
+#pragma warning(disable: 4820)  //	Disable warning about structure padding
+#pragma warning(disable: 5045)  //	Disable WArning about Specture/Meltdown Cpu Vulnerbility
 
 typedef struct GAMEBITMAP
 {
